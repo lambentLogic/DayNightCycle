@@ -24,7 +24,7 @@ class LightCycle():
         #color this depending on phase
     phase_descs = {'dawn':None, 'day':None, 'dusk':None, 'night':None}
 
-    #phase (dawn/day/dusk/night)
+    #phase (dawn-/day/dusk/night)
     current_phase = 'dawn'
 
     #time to next phase
@@ -35,19 +35,19 @@ class LightCycle():
         #advance phase and adjust lumens
         if self.current_phase == 'dawn':
             self.current_phase = 'day'
-            self.db.lumens = 50
+            #self.db.lumens = 50
         if self.current_phase == 'day':
             self.current_phase = 'dusk'
-            self.db.lumens = 25
+            #self.db.lumens = 25
         if self.current_phase == 'dusk':
             self.current_phase = 'night'
-            self.db.lumens = 10
+            #self.db.lumens = 10
         if self.current_phase == 'night':
             self.current_phase = 'dawn'
-            self.db.lumens = 30
+            #self.db.lumens = 30
 
         #set new phase length
-        self.remaining_phase_time = phase_lengths[self.current_phase]
+        self.remaining_phase_time = self.phase_lengths[self.current_phase]
 
     pass
 
@@ -81,7 +81,25 @@ class Room(DefaultRoom):
     #ticks a light cycle
     def at_object_creation(self):
         "Called when the object is first created." #Set to minute for testing purposes
+        print 'Room created'
         TICKER_HANDLER.add(self, 60, hook_key="at_hour")
+
+        #Room Attributes
+        self.db.lightCycleActive = False #whether phase is active
+
+        self.db.lightPhaseLengths = {'dawn':2, 'day':10, 'dusk':2, 'night':10} #phase duration
+
+        self.db.lightPhaseEchoes = {
+        'dawn':'The sun rises.', 'day':'The day brightens.', 'dusk':'The sun descends.', 'night':'The light fades.'
+        } #phase change echoes
+
+        self.db.lightPhaseDescs = {
+        'dawn':None, 'day':None, 'dusk':None, 'night':None
+        } #phase room descriptions
+
+        self.db.lightPhase = 'dawn' #current phase
+        self.db.lightPhaseTime = 2 #time left
+
 
     def at_hour(self, *args, **kwargs):
         "Ticked at regular (hourly) intervals." #Set to minute for testing purposes
