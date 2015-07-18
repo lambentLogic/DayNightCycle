@@ -29,10 +29,16 @@ class CmdRset(Command):
 
     def parse(self):
         self.command = self.args.strip()
+        self.arguments = self.args.split()
 
     def func(self):
+        print self.arguments[0] == "cycle"
+
         if not self.command:
-            self.caller.msg("Introducing: The rset command.")
+            rset_default_msg = "List of RSET Commands (help <command> for more information)\n\n"
+            list_rset_commands = "cycle"
+            rset_default_msg += list_rset_commands
+            self.caller.msg(rset_default_msg)
 
 
 #rset cycle <on/off>
@@ -42,13 +48,3 @@ class CmdRset(Command):
 #rset cycle echo <dawn/day/dusk/night> <string>
 
 #rset cycle desc <dawn/day/dusk/night> <string>
-
-#cadv
-
-class CmdCadv(Command):
-    """
-    cadv
-
-    Usage:
-        cadv
-    """

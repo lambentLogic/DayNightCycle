@@ -28,54 +28,54 @@ class Room(DefaultRoom):
         TICKER_HANDLER.add(self, 60, hook_key="at_hour")
 
         #Room Attributes
-        self.db.lightCycleActive = False #whether phase is active
+        self.db.light_cycle_active = False #whether phase is active
 
-        self.db.lightPhaseLengths = {'dawn':2, 'day':10, 'dusk':2, 'night':10} #phase duration
+        self.db.light_phase_lengths = {'dawn':2, 'day':10, 'dusk':2, 'night':10} #phase duration
 
-        self.db.lightPhaseEchoes = {
+        self.db.light_phase_echoes = {
         'dawn':'The sun rises.', 'day':'The day brightens.', 'dusk':'The sun descends.', 'night':'The light fades.'
         } #phase change echoes
 
-        self.db.lightPhaseDescs = {
+        self.db.light_phase_descs = {
         'dawn':'\n{YRosy-fingered dawn caresses the land.', 'day':'\n{wThe sun shines brightly.',
          'dusk':'\n{RThe sky shines in the hues of twilight.', 'night':'\n{cStars sprinkle the dark sky.'
         } #phase room descriptions
 
-        self.db.lightPhase = 'dawn' #current phase
-        self.db.lightPhaseTime = 2 #time left
+        self.db.light_phase = 'dawn' #current phase
+        self.db.light_phase_time = 2 #time left
 
 
     def at_hour(self, *args, **kwargs):
         "Ticked at regular (hourly) intervals." #Set to minute for testing purposes
         print 'Tick, tock' #debug line
-        if self.db.lightCycleActive == True:
+        if self.db.light_cycle_active == True:
             print 'cycle tick, tock' #debug line
-            self.db.lightPhaseTime -= 1
-            if self.db.lightPhaseTime <= 0: self.advance_light_cycle()
+            self.db.light_phase_time -= 1
+            if self.db.light_phase_time <= 0: self.advance_light_cycle()
 
 
     def advance_light_cycle(self):
         "Called on to advance the room's light cycle by one phase."
         print "Cycle advanced" #debug line
-        if self.db.lightPhase == 'dawn':
+        if self.db.light_phase == 'dawn':
             print 'It was dawn.' #debug line
-            self.db.lightPhase = 'day'
-        elif self.db.lightPhase == 'day':
+            self.db.light_phase = 'day'
+        elif self.db.light_phase == 'day':
             print 'It was day.' #debug line
-            self.db.lightPhase = 'dusk'
-        elif self.db.lightPhase == 'dusk':
+            self.db.light_phase = 'dusk'
+        elif self.db.light_phase == 'dusk':
             print 'It was dusk.' #debug line
-            self.db.lightPhase = 'night'
-        elif self.db.lightPhase == 'night':
+            self.db.light_phase = 'night'
+        elif self.db.light_phase == 'night':
             print 'It was night.' #debug line
-            self.db.lightPhase = 'dawn'
+            self.db.light_phase = 'dawn'
         else:
             print 'light phase is not a phase' #shouldn't reach
 
 
-        self.msg_contents(self.db.lightPhaseEchoes[self.db.lightPhase])
-        self.db.lightPhaseTime = self.db.lightPhaseLengths[self.db.lightPhase]
-        print self.db.lightPhaseTime #debug line
+        self.msg_contents(self.db.light_phase_echoes[self.db.light_phase])
+        self.db.light_phase_time = self.db.light_phase_lengths[self.db.light_phase]
+        print self.db.light_phase_time #debug line
 
     #Generate a description that includes the light cycle phase (if active)
     def return_appearance(self, looker):
@@ -103,11 +103,11 @@ class Room(DefaultRoom):
         # get description, build string
         string = "{c%s{n\n" % self.key
         desc = self.db.desc
-        lightdesc = self.db.lightPhaseDescs[self.db.lightPhase]
+        lightdesc = self.db.light_phase_descs[self.db.light_phase]
 
         if desc:
             string += "%s" % desc
-        if self.db.lightCycleActive == True:
+        if self.db.light_cycle_active == True:
             string += "%s" % lightdesc #Light phase associated description
         if exits:
             string += "\n{wExits:{n " + ", ".join(exits)
