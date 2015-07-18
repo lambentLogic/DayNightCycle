@@ -18,17 +18,7 @@ class Room(DefaultRoom):
     properties and methods available on all Objects.
     """
 
-    #Generate a description that includes the light cycle phase (if active)
-    def return_appearance(self, looker):
-        """
-        Called by the Look command.
-        Here returns the light phase specific description, if applicable.
-        """
-        ##overloaded method will go here. not doing anything unique yet
-        string = super(Room, self).return_appearance(looker)
-        return string
 
-    pass
 
 
     #ticks a light cycle
@@ -47,7 +37,8 @@ class Room(DefaultRoom):
         } #phase change echoes
 
         self.db.lightPhaseDescs = {
-        'dawn':None, 'day':None, 'dusk':None, 'night':None
+        'dawn':'\n{YRosy-fingered dawn caresses the land.', 'day':'\n{wThe sun shines brightly.',
+         'dusk':'\n{RThe sky shines in the hues of twilight.', 'night':'\n{cStars sprinkle the dark sky.'
         } #phase room descriptions
 
         self.db.lightPhase = 'dawn' #current phase
@@ -59,6 +50,8 @@ class Room(DefaultRoom):
         print 'Tick, tock' #debug line
         if self.db.lightCycleActive == True:
             print 'cycle tick, tock' #debug line
+            self.db.lightPhaseTime -= 1
+            if self.db.lightPhaseTime <= 0: self.advance_light_cycle()
 
 
     def advance_light_cycle(self):
@@ -84,3 +77,40 @@ class Room(DefaultRoom):
         self.db.lightPhaseTime = self.db.lightPhaseLengths[self.db.lightPhase]
         print self.db.lightPhaseTime #debug line
 
+    #Generate a description that includes the light cycle phase (if active)
+    def return_appearance(self, looker):
+        """
+        This formats a description. It is the hook a 'look' command
+        should call.
+
+        Args:
+            looker (Object): Object doing the looking.
+        """
+        if not looker:
+            return
+        # get and identify all objects
+        visible = (con for con in self.contents if con != looker and
+                                                    con.access(looker, "view"))
+        exits, users, things = [], [], []
+        for con in visible:
+            key = con.key
+            if con.destination:
+                exits.append(key)
+            elif con.has_player:
+                users.append("{c%s{n" % key)
+            else:
+                things.append(key)
+        # get description, build string
+        string = "{c%s{n\n" % self.key
+        desc = self.db.desc
+        lightdesc = self.db.lightPhaseDescs[self.db.lightPhase]
+
+        if desc:
+            string += "%s" % desc
+        if self.db.lightCycleActive == True:
+            string += "%s" % lightdesc #Light phase associated description
+        if exits:
+            string += "\n{wExits:{n " + ", ".join(exits)
+        if users or things:
+            string += "\n{wYou see:{n " + ", ".join(users + things)
+        return string
