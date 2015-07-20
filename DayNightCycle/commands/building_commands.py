@@ -32,19 +32,33 @@ class CmdRset(Command):
         self.arguments = self.args.split()
 
     def func(self):
-        print self.arguments[0] == "cycle"
 
         if not self.command:
             rset_default_msg = "List of RSET Commands (help <command> for more information)\n\n"
             list_rset_commands = "cycle"
             rset_default_msg += list_rset_commands
             self.caller.msg(rset_default_msg)
-
-
-#rset cycle <on/off>
-
-#rset cycle length <dawn length> <day length> <dusk length> <night length>
-
-#rset cycle echo <dawn/day/dusk/night> <string>
-
-#rset cycle desc <dawn/day/dusk/night> <string>
+        elif self.arguments[0] == "cycle":
+            if not self.arguments[1]:
+                 print "rset cycle no arguments"
+            elif self.arguments[1] == "on":
+                #turn light cycle on for the room
+                self.caller.location.db.light_cycle_active = True
+                self.caller.msg("Light cycle activated.")
+                pass
+            elif self.arguments[1] == "off":
+                #turn light cycle off for the room
+                self.caller.location.db.light_cycle_active = False
+                self.caller.msg("Light cycle deactivated.")
+                pass
+            elif self.arguments[1] == "length":
+                #rset cycle length <dawn length> <day length> <dusk length> <night length>
+                pass
+            elif self.arguments[1] == "echo":
+                #rset cycle echo <dawn/day/dusk/night> <string>
+                pass
+            elif self.arguments[1] == "desc":
+                #rset cycle desc <dawn/day/dusk/night> <string>
+                pass
+        else:
+            print "other"
