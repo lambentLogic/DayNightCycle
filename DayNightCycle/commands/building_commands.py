@@ -42,11 +42,13 @@ class CmdRset(Command):
             if not self.arguments[1]:
                  print "rset cycle no arguments"
             elif self.arguments[1] == "on":
+                #Usage: rset cycle on
                 #turn light cycle on for the room
                 self.caller.location.db.light_cycle_active = True
                 self.caller.msg("Light cycle activated.")
                 pass
             elif self.arguments[1] == "off":
+                #Usage: rset cycle off
                 #turn light cycle off for the room
                 self.caller.location.db.light_cycle_active = False
                 self.caller.msg("Light cycle deactivated.")
