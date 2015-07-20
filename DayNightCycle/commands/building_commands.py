@@ -39,7 +39,7 @@ class CmdRset(Command):
             rset_default_msg += list_rset_commands
             self.caller.msg(rset_default_msg)
         elif self.arguments[0] == "cycle":
-            if not self.arguments[1]:
+            if len(self.arguments) == 1: #check the number of arguments
                  print "rset cycle no arguments"
             elif self.arguments[1] == "on":
                 #Usage: rset cycle on
@@ -55,12 +55,17 @@ class CmdRset(Command):
                 pass
             elif self.arguments[1] == "length":
                 #rset cycle length <dawn length> <day length> <dusk length> <night length>
+                #test if there are the right number of arguments (5 including length)
                 pass
             elif self.arguments[1] == "echo":
                 #rset cycle echo <dawn/day/dusk/night> <string>
+                #test if there are at least 2 arguments
+                #go back to self.command and strip rset cycle echo <>
                 pass
             elif self.arguments[1] == "desc":
                 #rset cycle desc <dawn/day/dusk/night> <string>
+                #test if there are at least 2 arguments
+                #go back to self.command and strip rset cycle desc <>
                 pass
         else:
             print "other"
