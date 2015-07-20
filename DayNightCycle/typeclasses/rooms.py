@@ -50,9 +50,9 @@ class Room(DefaultRoom):
         print 'Tick, tock' #debug line
         if self.db.light_cycle_active == True:
             print 'cycle tick, tock' #debug line
-            self.db.light_phase_time -= 1
-            if self.db.light_phase_time <= 0: self.advance_light_cycle()
 
+            self.db.light_phase_time -= 1
+            while self.db.light_phase_time <= 0: self.advance_light_cycle()
 
     def advance_light_cycle(self):
         "Called on to advance the room's light cycle by one phase."
@@ -73,9 +73,11 @@ class Room(DefaultRoom):
             print 'light phase is not a phase' #shouldn't reach
 
 
-        self.msg_contents(self.db.light_phase_echoes[self.db.light_phase])
+        if self.db.light_phase_lengths[self.db.light_phase] > 0: self.msg_contents(self.db.light_phase_echoes[self.db.light_phase])
         self.db.light_phase_time = self.db.light_phase_lengths[self.db.light_phase]
         print self.db.light_phase_time #debug line
+
+        if self.db.light_phase_lengths == 0: advance_light_cycle(self)
 
     #Generate a description that includes the light cycle phase (if active)
     def return_appearance(self, looker):
