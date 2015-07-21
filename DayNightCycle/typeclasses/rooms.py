@@ -30,9 +30,11 @@ class Room(DefaultRoom):
         TICKER_HANDLER.add(self, 60*60, hook_key="at_hour") #60*60 = seconds
 
         #Room Attributes
-        self.db.light_cycle_active = False #whether phase is active
+        #whether light cycle phase is active
+        self.db.light_cycle_active = False
 
-        self.db.light_phase_lengths = {"dawn":2, "day":10, "dusk":2, "night":10} #phase duration
+        #light phase duration
+        self.db.light_phase_lengths = {"dawn":2, "day":10, "dusk":2, "night":10}
 
         self.db.light_phase_echoes = {
         "dawn":"", "day":"", "dusk":"", "night":""
@@ -78,7 +80,8 @@ class Room(DefaultRoom):
         elif self.db.light_phase == "dusk":
             self.db.light_phase = "night"
             self.db.light_phase_hour = self.db.light_phase_lengths["dawn"] + \
-                self.db.light_phase_lengths["day"] + self.db.light_phase_lengths["dusk"]
+                self.db.light_phase_lengths["day"] + \
+                self.db.light_phase_lengths["dusk"]
             #Dusk to night
 
         elif self.db.light_phase == "night":
@@ -90,8 +93,11 @@ class Room(DefaultRoom):
             print "Light phase is not a phase" #shouldn't reach
 
 
-        if self.db.light_phase_lengths[self.db.light_phase] > 0: self.msg_contents(self.db.light_phase_echoes[self.db.light_phase])
-        self.db.light_phase_time = self.db.light_phase_lengths[self.db.light_phase]
+        if self.db.light_phase_lengths[self.db.light_phase] > 0:
+            self.msg_contents(self.db.light_phase_echoes[self.db.light_phase])
+
+        self.db.light_phase_time = self.db.light_phase_lengths[
+            self.db.light_phase]
 
         if self.db.light_phase_lengths == 0: advance_light_cycle(self)
 
