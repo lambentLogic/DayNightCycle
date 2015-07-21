@@ -65,11 +65,62 @@ class CmdRset(Command):
                     pass
 
                 if len(self.arguments) == 6 and self.length_sum == 24:
-                    print "4 lengths that add to the cycle length"
+                    #replace 24 with zone-specific cycle length
+                    #Good input; user input 4 numbers that add to 24
+                    self.caller.location.db.light_phase_lengths = {
+                    'dawn':int(self.arguments[2]),
+                    'day':int(self.arguments[3]),
+                    'dusk':int(self.arguments[4]),
+                    'night':int(self.arguments[5])
+                    }
+                    self.caller.msg("Light phase lengths set.")
+                    #go through and set room back to when it was in loop
+                    dawn_length = int(self.arguments[2])
+                    day_length = int(self.arguments[3])
+                    dusk_length = int(self.arguments[4])
+                    night_length = int(self.arguments[5])
+
+                    dawn_end = dawn_length
+                    day_end = day_length + dawn_end
+                    dusk_end = dusk_length + day_end
+                    night_end = night_length + dusk_end
+
+                    #hours in range(dawn_end) is dawn
+                    #hours in range(dawn_end,day_end) is day
+                    #hours in range(day_end, dusk_end) is dusk
+                    #hours in range(dusk_end, night_end) is night
+
+                    for i in range(dawn_end):
+                        if self.caller.location.db.light_phase_hour == i:
+                            self.caller.location.db.light_phase = 'dawn'
+                            self.caller.location.db.light_phase_time = \
+                            dawn_length - i
+                            self.caller.msg("It is dawn.")
+
+                    for i in range(dawn_end, day_end):
+                        if self.caller.location.db.light_phase_hour == i:
+                            self.caller.location.db.light_phase = 'day'
+                            self.caller.location.db.light_phase_time = \
+                            day_length - (i - dawn_end)
+                            self.caller.msg("It is day.")
+
+                    for i in range(day_end, dusk_end):
+                        if self.caller.location.db.light_phase_hour == i:
+                            self.caller.location.db.light_phase = 'dusk'
+                            self.caller.location.db.light_phase_time = \
+                            dusk_length - (i - day_end)
+                            self.caller.msg("It is dusk.")
+
+                    for i in range(dusk_end, night_end):
+                        if self.caller.location.db.light_phase_hour == i:
+                            self.caller.location.db.light_phase = 'night'
+                            self.caller.location.db.light_phase_time = \
+                            night_length - (i - dusk_end)
+                            self.caller.msg("It is night.")
 
                 else:
                     self.caller.msg("Please enter four numbers that add to "+str(24)+".")
-                    #replace 24 with zone cycle length when implemented
+                    #replace 24 with zone cycle length
 
             elif self.arguments[1] == "echo":
                 #rset cycle echo <dawn/day/dusk/night> <string>

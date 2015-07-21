@@ -44,6 +44,8 @@ class Room(DefaultRoom):
         self.db.light_phase = 'dawn' #current phase
         self.db.light_phase_time = 2 #time left
 
+        self.db.light_phase_hour = 0 #time into cycle
+
 
     def at_hour(self, *args, **kwargs):
         "Ticked at regular (hourly) intervals." #Set to minute for testing purposes
@@ -52,6 +54,8 @@ class Room(DefaultRoom):
             print 'cycle tick, tock' #debug line
 
             self.db.light_phase_time -= 1
+            self.db.light_phase_hour += 1
+
             while self.db.light_phase_time <= 0: self.advance_light_cycle()
 
     def advance_light_cycle(self):
@@ -60,15 +64,21 @@ class Room(DefaultRoom):
         if self.db.light_phase == 'dawn':
             print 'It was dawn.' #debug line
             self.db.light_phase = 'day'
+            self.db.light_phase_hour = self.db.light_phase_lengths['dawn']
         elif self.db.light_phase == 'day':
             print 'It was day.' #debug line
             self.db.light_phase = 'dusk'
+            self.db.light_phase_hour = self.db.light_phase_lengths['dawn'] + \
+                self.db.light_phase_lengths['day']
         elif self.db.light_phase == 'dusk':
             print 'It was dusk.' #debug line
             self.db.light_phase = 'night'
+            self.db.light_phase_hour = self.db.light_phase_lengths['dawn'] + \
+                self.db.light_phase_lengths['day'] + self.db.light_phase_lengths['dusk']
         elif self.db.light_phase == 'night':
             print 'It was night.' #debug line
             self.db.light_phase = 'dawn'
+            self.db.light_phase_hour = 0
         else:
             print 'light phase is not a phase' #shouldn't reach
 
