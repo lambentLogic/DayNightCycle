@@ -28,10 +28,17 @@ class CmdRset(Command):
     help_category = "Building"
 
     def parse(self):
-        self.command = self.args.strip()
-        self.arguments = self.args.split()
+        """
+        Parsing method for the rset command.
+        """
+        self.command = self.args.strip() #everything after rset
+        self.arguments = self.args.split() #list of arguments
 
     def func(self):
+        """
+        Functionality of the rset command. Currently either returns a default
+        value, or uses the 'rset cycle' tool.
+        """
 
         if not self.command:
             rset_default_msg = "List of RSET Commands (help <command> for more information)\n\n"
@@ -40,28 +47,42 @@ class CmdRset(Command):
             self.caller.msg(rset_default_msg)
         elif self.arguments[0] == "cycle":
             if len(self.arguments) == 1: #check the number of arguments
-                 print "rset cycle no arguments" #debug line
+                #no arguments, suggest how to use
+                self.caller.msg("Usage: rset cycle <command> <arguments>")
 
             elif self.arguments[1] == "on":
-                #Usage: rset cycle on
-                #turn light cycle on for the room
+                """
+                Usage: rset cycle on
+
+                Turn light cycle on for the room
+                """
                 self.caller.location.db.light_cycle_active = True
                 self.caller.msg("Light cycle activated.")
 
             elif self.arguments[1] == "off":
-                #Usage: rset cycle off
-                #turn light cycle off for the room
+                """
+                Usage: rset cycle off
+
+                Turn light cycle off for the room
+                """
                 self.caller.location.db.light_cycle_active = False
                 self.caller.msg("Light cycle deactivated.")
 
             elif self.arguments[1] == "length":
-                #rset cycle length <dawn length> <day length> <dusk length> <night length>
-                self.length_sum = 0
+                """
+                Usage:
+                rset cycle length <dawn length> <day length> <dusk length> <night length>
+
+                Sets what the lengths of the phases of the light cycle are
+                """
+                self.length_sum = 0 #variable to check cycle length adds up
 
                 try:
+                    #sum the arguments that should be numbers
                     self.length_sum = sum(map(int, self.arguments[2:]))
                 except (ValueError, IndexError):
                     #User failed to input arguments or input nonintegers
+                    #no need to do anything in particular, else will cover
                     pass
 
                 if len(self.arguments) == 6 and self.length_sum == 24:
@@ -123,7 +144,13 @@ class CmdRset(Command):
                     #replace 24 with zone cycle length
 
             elif self.arguments[1] == "echo":
-                #rset cycle echo <dawn/day/dusk/night> <string>
+                """
+                Usage:
+                rset cycle echo <dawn/day/dusk/night> <string>
+
+                Sets the echoes for the phases of the light cycle
+                """
+
                 #test if there are at least 2 arguments
                 if len(self.arguments) == 2:
                     self.caller.msg("Usage: rset cycle echo <dawn/dusk/day/night> <string>")
@@ -143,7 +170,13 @@ class CmdRset(Command):
                     self.caller.msg("Usage: rset cycle echo <dawn/dusk/day/night> <string>")
 
             elif self.arguments[1] == "desc":
-                #rset cycle desc <dawn/day/dusk/night> <string>
+                """
+                Usage:
+                rset cycle desc <dawn/day/dusk/night> <string>
+
+                Writes additional room description based on phase in light cycle
+                """
+
                 #test if there are at least 2 arguments
                 if len(self.arguments) == 2:
                     self.caller.msg("Usage: rset cycle desc <dawn/dusk/day/night> <string>")
@@ -152,7 +185,9 @@ class CmdRset(Command):
                 self.arguments[2] == "dusk" or\
                 self.arguments[2] == "night":
                     #formatted right, now we need to get <string>
+
                     desc = str(self.command.partition(self.arguments[2])[2].strip())
+
                     if self.arguments[2] == 'dawn':
                         rdesc = "\n{Y" + desc #dark yellow
                     elif self.arguments[2] == 'day':
@@ -161,14 +196,21 @@ class CmdRset(Command):
                         rdesc = "\n{R" + desc #dark red
                     elif self.arguments[2] == 'night':
                         rdesc = "\n{c" + desc #bright cyan
+                    else:
+                        print "Something has gone wrong" #shouldn't reach here
+
+                    if desc == "": rdesc = desc
 
                     #add desc to phase descriptions
                     self.caller.location.db.light_phase_descs[self.arguments[2]] = \
                     rdesc
+
+                    #show builder what they wrote and for where
                     self.caller.msg("Light phase room description written for " +
                      self.arguments[2] + ": " + rdesc)
+                else:
+                    #didn't use right in some fashion
+                    self.caller.msg("Usage: rset cycle desc <dawn/dusk/day/night> <string>")
             else:
-                self.caller.msg("Usage: rset cycle desc <dawn/dusk/day/night> <string>")
-        else:
-            #if not an implemented rset command
-            self.caller.msg("Command not recognized.")
+                #if not an implemented rset command
+                self.caller.msg("Command not recognized.")
