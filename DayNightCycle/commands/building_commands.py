@@ -125,13 +125,50 @@ class CmdRset(Command):
             elif self.arguments[1] == "echo":
                 #rset cycle echo <dawn/day/dusk/night> <string>
                 #test if there are at least 2 arguments
-                #go back to self.command and strip rset cycle echo <>
-                pass
+                if len(self.arguments) == 2:
+                    self.caller.msg("Usage: rset cycle echo <dawn/dusk/day/night> <string>")
+                elif self.arguments[2] == 'dawn' or\
+                self.arguments[2] == "day" or\
+                self.arguments[2] == "dusk" or\
+                self.arguments[2] == "night":
+                    #formatted right, now we need to get <string>
+                    echo = str(self.command.partition(self.arguments[2])[2].strip())
+
+                    #add echo to phase echoes
+                    self.caller.location.db.light_phase_echoes[self.arguments[2]] = \
+                    echo
+                    self.caller.msg("Echo written for "+self.arguments[2] +
+                    ": " + echo)
+                else:
+                    self.caller.msg("Usage: rset cycle echo <dawn/dusk/day/night> <string>")
 
             elif self.arguments[1] == "desc":
                 #rset cycle desc <dawn/day/dusk/night> <string>
                 #test if there are at least 2 arguments
-                #go back to self.command and strip rset cycle desc <>
-                pass
+                if len(self.arguments) == 2:
+                    self.caller.msg("Usage: rset cycle desc <dawn/dusk/day/night> <string>")
+                elif self.arguments[2] == 'dawn' or\
+                self.arguments[2] == "day" or\
+                self.arguments[2] == "dusk" or\
+                self.arguments[2] == "night":
+                    #formatted right, now we need to get <string>
+                    desc = str(self.command.partition(self.arguments[2])[2].strip())
+                    if self.arguments[2] == 'dawn':
+                        rdesc = "\n{Y" + desc #dark yellow
+                    elif self.arguments[2] == 'day':
+                        rdesc =  "\n{w" + desc #bright white
+                    elif self.arguments[2] == 'dusk':
+                        rdesc = "\n{R" + desc #dark red
+                    elif self.arguments[2] == 'night':
+                        rdesc = "\n{c" + desc #bright cyan
+
+                    #add desc to phase descriptions
+                    self.caller.location.db.light_phase_descs[self.arguments[2]] = \
+                    rdesc
+                    self.caller.msg("Light phase room description written for " +
+                     self.arguments[2] + ": " + rdesc)
+            else:
+                self.caller.msg("Usage: rset cycle desc <dawn/dusk/day/night> <string>")
         else:
-            print "other"
+            #if not an implemented rset command
+            self.caller.msg("Command not recognized.")
