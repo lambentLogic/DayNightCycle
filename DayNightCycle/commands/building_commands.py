@@ -80,13 +80,13 @@ class CmdRset(Command):
                 self.length_sum = 0 #variable to check cycle length adds up
 
                 try:
-                    #sum the arguments that should be numbers
                     length_map = map(int, self.arguments[2:])
                 except (ValueError, IndexError):
                     #User failed to input arguments or input nonintegers
                     #no need to do anything in particular, else will cover
                     pass
                 else:
+                    #sum the arguments that should be numbers
                     self.length_sum = sum(length_map)
 
                 if len(self.arguments) == 6 and self.length_sum == 24:
