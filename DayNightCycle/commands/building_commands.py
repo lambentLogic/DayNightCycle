@@ -47,7 +47,7 @@ class CmdRset(Command):
             rset_default_msg += list_rset_commands
             self.caller.msg(rset_default_msg)
         elif self.arguments[0] == "cycle":
-            if len(self.arguments) == 1: #check the number of arguments
+            if len(self.arguments) == 1:
                 #no arguments, suggest how to use
                 self.caller.msg("Usage: rset cycle <command> <arguments>")
 
@@ -81,11 +81,13 @@ class CmdRset(Command):
 
                 try:
                     #sum the arguments that should be numbers
-                    self.length_sum = sum(map(int, self.arguments[2:]))
+                    length_map = map(int, self.arguments[2:])
                 except (ValueError, IndexError):
                     #User failed to input arguments or input nonintegers
                     #no need to do anything in particular, else will cover
                     pass
+                else:
+                    self.length_sum = sum(length_map)
 
                 if len(self.arguments) == 6 and self.length_sum == 24:
                     #replace 24 with zone-specific cycle length

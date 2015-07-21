@@ -54,7 +54,7 @@ class Room(DefaultRoom):
         """
         Ticked at regular (hourly) intervals.
         """
-        if self.db.light_cycle_active == True:
+        if self.db.light_cycle_active:
 
             self.db.light_phase_time -= 1
             self.db.light_phase_hour += 1
