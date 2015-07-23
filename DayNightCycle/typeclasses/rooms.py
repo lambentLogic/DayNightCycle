@@ -32,12 +32,9 @@ class Room(DefaultRoom):
         """
         Ticked at regular (hourly) intervals.
         """
-        if self.db.light_cycle_active:
 
-            self.db.light_phase_time -= 1
-            self.db.light_phase_hour += 1
+        lightcycle.at_cycle_hour(self)
 
-            while self.db.light_phase_time <= 0: lightcycle.advance_light_cycle(self)
 
     #Generate a description that includes the light cycle phase (if active)
     def return_appearance(self, looker):
