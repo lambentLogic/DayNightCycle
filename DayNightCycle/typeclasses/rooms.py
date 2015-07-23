@@ -25,7 +25,7 @@ class Room(DefaultRoom):
         """
 
         #Subscribes room to ticker_handler and calls at_hour every tick
-        TICKER_HANDLER.add(self, 60, hook_key="at_hour") #60 = seconds
+        TICKER_HANDLER.add(self, 60*60, hook_key="at_hour") #60*60 = seconds
 
 
         #Room Attributes related to Light Cycles
