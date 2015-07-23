@@ -1,12 +1,8 @@
-from evennia import TICKER_HANDLER
-
-
 def set_default_cycle(room):
     """
     Sets a room's light cycle attributes to their default state.
     """
-
-    TICKER_HANDLER.add(room, 60, hook_key="at_hour") #60 = seconds
+    #Method not currently in use
 
     #Room Attributes
     #whether light cycle phase is active
@@ -27,6 +23,7 @@ def set_default_cycle(room):
     room.db.light_phase_time = 2 #time left
 
     room.db.light_phase_hour = 0 #time into cycle, starting at dawn
+
 
 def advance_light_cycle(room):
         """

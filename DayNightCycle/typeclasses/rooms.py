@@ -5,7 +5,7 @@ Rooms are simple containers that has no location of their own.
 
 """
 
-from evennia import DefaultRoom
+from evennia import DefaultRoom, TICKER_HANDLER
 import lightcycle
 
 class Room(DefaultRoom):
@@ -19,13 +19,37 @@ class Room(DefaultRoom):
     properties and methods available on all Objects.
     """
 
-    #ticks a light cycle
     def at_object_creation(self):
         """
         Called when the object is first created.
         """
 
-        lightcycle.set_default_cycle(self)
+        #Subscribes room to ticker_handler and calls at_hour every tick
+        TICKER_HANDLER.add(self, 60, hook_key="at_hour") #60 = seconds
+
+
+        #Room Attributes related to Light Cycles
+
+        #whether light cycle phase is active
+        self.db.light_cycle_active = False
+
+        #light phase duration
+        self.db.light_phase_lengths = {"dawn":2, "day":10, "dusk":2, "night":10}
+
+        self.db.light_phase_echoes = {
+            "dawn":"", "day":"", "dusk":"", "night":""
+            } #phase change echoes
+
+        self.db.light_phase_descs = {
+            "dawn":"", "day":"", "dusk":"", "night":""
+            } #phase room descriptions
+
+        self.db.light_phase = "dawn" #current phase
+        self.db.light_phase_time = 2 #time left
+
+        self.db.light_phase_hour = 0 #time into cycle, starting at dawn
+
+        #End room attributes related to Light Cycles
 
 
     def at_hour(self, *args, **kwargs):
