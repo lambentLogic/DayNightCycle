@@ -5,7 +5,8 @@ Rooms are simple containers that has no location of their own.
 
 """
 
-from evennia import DefaultRoom, TICKER_HANDLER
+from evennia import DefaultRoom
+import lightcycle
 
 class Room(DefaultRoom):
     """
@@ -18,36 +19,13 @@ class Room(DefaultRoom):
     properties and methods available on all Objects.
     """
 
-
-
-
     #ticks a light cycle
     def at_object_creation(self):
         """
         Called when the object is first created.
         """
 
-        TICKER_HANDLER.add(self, 60*60, hook_key="at_hour") #60*60 = seconds
-
-        #Room Attributes
-        #whether light cycle phase is active
-        self.db.light_cycle_active = False
-
-        #light phase duration
-        self.db.light_phase_lengths = {"dawn":2, "day":10, "dusk":2, "night":10}
-
-        self.db.light_phase_echoes = {
-        "dawn":"", "day":"", "dusk":"", "night":""
-        } #phase change echoes
-
-        self.db.light_phase_descs = {
-        "dawn":"", "day":"", "dusk":"", "night":""
-        } #phase room descriptions
-
-        self.db.light_phase = "dawn" #current phase
-        self.db.light_phase_time = 2 #time left
-
-        self.db.light_phase_hour = 0 #time into cycle, starting at dawn
+        lightcycle.set_default_cycle(self)
 
 
     def at_hour(self, *args, **kwargs):
@@ -59,47 +37,7 @@ class Room(DefaultRoom):
             self.db.light_phase_time -= 1
             self.db.light_phase_hour += 1
 
-            while self.db.light_phase_time <= 0: self.advance_light_cycle()
-
-    def advance_light_cycle(self):
-        """
-        Called on to advance the room's light cycle by one phase.
-        """
-
-        if self.db.light_phase == "dawn":
-            self.db.light_phase = "day"
-            self.db.light_phase_hour = self.db.light_phase_lengths["dawn"]
-            #Dawn to day
-
-        elif self.db.light_phase == "day":
-            self.db.light_phase = "dusk"
-            self.db.light_phase_hour = self.db.light_phase_lengths["dawn"] + \
-                self.db.light_phase_lengths["day"]
-            #Day to dusk
-
-        elif self.db.light_phase == "dusk":
-            self.db.light_phase = "night"
-            self.db.light_phase_hour = self.db.light_phase_lengths["dawn"] + \
-                self.db.light_phase_lengths["day"] + \
-                self.db.light_phase_lengths["dusk"]
-            #Dusk to night
-
-        elif self.db.light_phase == "night":
-            self.db.light_phase = "dawn"
-            self.db.light_phase_hour = 0
-            #Night to dawn. Also resets our cycle clock
-
-        else:
-            print "Light phase is not a phase" #shouldn't reach
-
-
-        if self.db.light_phase_lengths[self.db.light_phase] > 0:
-            self.msg_contents(self.db.light_phase_echoes[self.db.light_phase])
-
-        self.db.light_phase_time = self.db.light_phase_lengths[
-            self.db.light_phase]
-
-        if self.db.light_phase_lengths == 0: advance_light_cycle(self)
+            while self.db.light_phase_time <= 0: lightcycle.advance_light_cycle(self)
 
     #Generate a description that includes the light cycle phase (if active)
     def return_appearance(self, looker):

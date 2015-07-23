@@ -4,6 +4,7 @@
 
 from evennia import CmdSet, utils
 from evennia import Command
+import lightcycle
 
 
 class StoryCmdSet(CmdSet):
@@ -28,4 +29,4 @@ class CmdCadv(Command):
         pass
 
     def func(self):
-        self.caller.location.advance_light_cycle()
+        lightcycle.advance_light_cycle(self.caller.location)
