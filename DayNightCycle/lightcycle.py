@@ -36,12 +36,14 @@ def advance_light_cycle(room):
         if room.db.light_phase == "dawn":
             room.db.light_phase = "day"
             room.db.light_phase_hour = room.db.light_phase_lengths["dawn"]
+            #room.db.lumens = 50
             #Dawn to day
 
         elif room.db.light_phase == "day":
             room.db.light_phase = "dusk"
             room.db.light_phase_hour = room.db.light_phase_lengths["dawn"] + \
                 room.db.light_phase_lengths["day"]
+            #room.db.lumens = 25
             #Day to dusk
 
         elif room.db.light_phase == "dusk":
@@ -49,11 +51,13 @@ def advance_light_cycle(room):
             room.db.light_phase_hour = room.db.light_phase_lengths["dawn"] + \
                 room.db.light_phase_lengths["day"] + \
                 room.db.light_phase_lengths["dusk"]
+            #room.db.lumens = 10
             #Dusk to night
 
         elif room.db.light_phase == "night":
             room.db.light_phase = "dawn"
             room.db.light_phase_hour = 0
+            #room.db.lumens = 30
             #Night to dawn. Also resets our cycle clock
 
         else:
@@ -149,6 +153,7 @@ def rset_cycle_length(self):
 				self.caller.location.db.light_phase = 'dawn'
 				self.caller.location.db.light_phase_time = \
 				dawn_length - i
+                #room.db.lumens = 30
 				self.caller.msg("It is dawn.")
 
 		for i in range(dawn_end, day_end):
@@ -156,6 +161,7 @@ def rset_cycle_length(self):
 				self.caller.location.db.light_phase = 'day'
 				self.caller.location.db.light_phase_time = \
 				day_length - (i - dawn_end)
+                #room.db.lumens = 50
 				self.caller.msg("It is day.")
 
 		for i in range(day_end, dusk_end):
@@ -163,6 +169,7 @@ def rset_cycle_length(self):
 				self.caller.location.db.light_phase = 'dusk'
 				self.caller.location.db.light_phase_time = \
 				dusk_length - (i - day_end)
+                #room.db.lumens = 25
 				self.caller.msg("It is dusk.")
 
 		for i in range(dusk_end, night_end):
@@ -170,6 +177,7 @@ def rset_cycle_length(self):
 				self.caller.location.db.light_phase = 'night'
 				self.caller.location.db.light_phase_time = \
 				night_length - (i - dusk_end)
+                #room.db.lumens = 10
 				self.caller.msg("It is night.")
 
     else:
