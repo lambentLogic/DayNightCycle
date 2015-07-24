@@ -48,6 +48,7 @@ class Room(DefaultRoom):
         self.db.light_phase_time = 2 #time left
 
         self.db.light_phase_hour = 0 #time into cycle, starting at dawn
+        self.db.lumens = 30 #temporary default lumens value
 
         #End room attributes related to Light Cycles
 

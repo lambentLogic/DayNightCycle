@@ -36,14 +36,14 @@ def advance_light_cycle(room):
         if room.db.light_phase == "dawn":
             room.db.light_phase = "day"
             room.db.light_phase_hour = room.db.light_phase_lengths["dawn"]
-            #room.db.lumens = 50
+            room.db.lumens = 50
             #Dawn to day
 
         elif room.db.light_phase == "day":
             room.db.light_phase = "dusk"
             room.db.light_phase_hour = room.db.light_phase_lengths["dawn"] + \
                 room.db.light_phase_lengths["day"]
-            #room.db.lumens = 25
+            room.db.lumens = 25
             #Day to dusk
 
         elif room.db.light_phase == "dusk":
@@ -51,13 +51,13 @@ def advance_light_cycle(room):
             room.db.light_phase_hour = room.db.light_phase_lengths["dawn"] + \
                 room.db.light_phase_lengths["day"] + \
                 room.db.light_phase_lengths["dusk"]
-            #room.db.lumens = 10
+            room.db.lumens = 10
             #Dusk to night
 
         elif room.db.light_phase == "night":
             room.db.light_phase = "dawn"
             room.db.light_phase_hour = 0
-            #room.db.lumens = 30
+            room.db.lumens = 30
             #Night to dawn. Also resets our cycle clock
 
         else:
@@ -153,35 +153,35 @@ def rset_cycle_length(self):
 				self.caller.location.db.light_phase = 'dawn'
 				self.caller.location.db.light_phase_time = \
 				dawn_length - i
-                #room.db.lumens = 30
-				self.caller.msg("It is dawn.")
+                self.caller.location.db.lumens = 30
+                self.caller.msg("It is dawn.")
 
 		for i in range(dawn_end, day_end):
 			if self.caller.location.db.light_phase_hour == i:
 				self.caller.location.db.light_phase = 'day'
 				self.caller.location.db.light_phase_time = \
 				day_length - (i - dawn_end)
-                #room.db.lumens = 50
-				self.caller.msg("It is day.")
+                self.caller.location.db.lumens = 50
+                self.caller.msg("It is day.")
 
 		for i in range(day_end, dusk_end):
 			if self.caller.location.db.light_phase_hour == i:
 				self.caller.location.db.light_phase = 'dusk'
 				self.caller.location.db.light_phase_time = \
 				dusk_length - (i - day_end)
-                #room.db.lumens = 25
-				self.caller.msg("It is dusk.")
+                self.caller.location.db.lumens = 25
+                self.caller.msg("It is dusk.")
 
 		for i in range(dusk_end, night_end):
 			if self.caller.location.db.light_phase_hour == i:
 				self.caller.location.db.light_phase = 'night'
 				self.caller.location.db.light_phase_time = \
 				night_length - (i - dusk_end)
-                #room.db.lumens = 10
-				self.caller.msg("It is night.")
+                self.caller.location.db.lumens = 10
+                self.caller.msg("It is night.")
 
     else:
-		self.caller.msg("Please enter four numbers that add to "
+		self.caller.msg("Please enter four numbers that add up to a sum of "
 			+str(24)+".")
 		#replace 24 with zone cycle length
 
@@ -206,10 +206,23 @@ def rset_cycle_echo(self):
         #formatted right, now we need to get <string>
         echo = str(self.command.partition(self.arguments[2])[2].strip())
 
-        #add echo to phase echoes
-        self.caller.location.db.light_phase_echoes[self.arguments[2]] = echo
+        if self.arguments[2] == 'dawn':
+            recho = "{Y" + echo #dark yellow
+        elif self.arguments[2] == 'day':
+            recho =  "{c" + echo #bright cyan
+        elif self.arguments[2] == 'dusk':
+            recho = "{R" + echo #dark red
+        elif self.arguments[2] == 'night':
+            recho = "{C" + echo #dark cyan
+        else:
+            print "Something has gone wrong" #shouldn't reach here
 
-        self.caller.msg("Echo written for "+self.arguments[2] + ": " + echo)
+        if echo == "": recho = echo #removes any color if empty
+
+        #add echo to phase echoes
+        self.caller.location.db.light_phase_echoes[self.arguments[2]] = recho
+
+        self.caller.msg("Echo written for "+self.arguments[2] + ": " + recho)
 
     else:
         self.caller.msg(
@@ -241,11 +254,11 @@ def rset_cycle_desc(self):
         if self.arguments[2] == 'dawn':
             rdesc = "\n{Y" + desc #dark yellow
         elif self.arguments[2] == 'day':
-            rdesc =  "\n{w" + desc #bright white
+            rdesc =  "\n{c" + desc #bright cyan
         elif self.arguments[2] == 'dusk':
             rdesc = "\n{R" + desc #dark red
         elif self.arguments[2] == 'night':
-            rdesc = "\n{c" + desc #bright cyan
+            rdesc = "\n{C" + desc #dark cyan
         else:
             print "Something has gone wrong" #shouldn't reach here
 
